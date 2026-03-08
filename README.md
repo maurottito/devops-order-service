@@ -44,30 +44,4 @@ npm start
 | `DB_PASSWORD`         | `password`              |
 | `PRODUCT_SERVICE_URL` | `http://localhost:3001` |
 
-|------------------------|-------------------------|-----------------------------------|
-| `PORT`                 | `3002`                  | Port the service listens on       |
-| `DB_HOST`              | `localhost`             | PostgreSQL host                   |
-| `DB_PORT`              | `5432`                  | PostgreSQL port                   |
-| `DB_NAME`              | `ecommerce`             | Database name                     |
-| `DB_USER`              | `postgres`              | Database user                     |
-| `DB_PASSWORD`          | `password`              | Database password                 |
-| `PRODUCT_SERVICE_URL`  | `http://localhost:3001` | Base URL for the product service  |
 
-## Available Scripts
-
-| Script      | Description             |
-|-------------|-------------------------|
-| `npm start` | Start the service       |
-| `npm test`  | Run tests with Jest     |
-
-## Folder Structure
-
-```
-devops-order-service/
-├── src/
-│   └── index.js        # Express app and route handlers
-├── .env.example        # Environment variable template
-├── .gitignore
-├── package.json
-└── README.md
-```
