@@ -3,9 +3,11 @@ const cors = require('cors');
 const axios = require('axios');
 const { Pool } = require('pg');
 
-const index = express();
-index.use(cors());
-index.use(express.json());
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+const PRODUCT_SERVICE_URL = process.env.PRODUCT_SERVICE_URL || 'http://localhost:3001';
 
 // Database connection
 const pool = new Pool({
@@ -13,16 +15,16 @@ const pool = new Pool({
     database: process.env.DB_NAME || 'ecommerce',
     user: process.env.DB_USER || 'postgres',
     password: process.env.DB_PASSWORD || 'password',
-    port: 5432,
+    port: parseInt(process.env.DB_PORT, 10) || 5432,
 });
 
 // Health check
-index.get('/health', (req, res) => {
+app.get('/health', (req, res) => {
     res.status(200).send('OK');
 });
 
 // Get all orders
-index.get('/orders', async (req, res) => {
+app.get('/orders', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM orders ORDER BY created_at DESC');
         res.json(result.rows);
@@ -33,12 +35,12 @@ index.get('/orders', async (req, res) => {
 });
 
 // Create order
-index.post('/orders', async (req, res) => {
+app.post('/orders', async (req, res) => {
     try {
         const { productId, quantity } = req.body;
 
         // Verify product exists (call product service)
-        const productResponse = await axios.get(`http://product-service:3001/products/${productId}`);
+        const productResponse = await axios.get(`${PRODUCT_SERVICE_URL}/products/${productId}`);
         const product = productResponse.data;
 
         const totalPrice = product.price * quantity;
@@ -59,7 +61,7 @@ index.post('/orders', async (req, res) => {
 });
 
 // Update order status
-index.patch('/orders/:id', async (req, res) => {
+app.patch('/orders/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const { status } = req.body;
@@ -81,6 +83,6 @@ index.patch('/orders/:id', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3002;
-index.listen(PORT, () => {
+app.listen(PORT, () => {
     console.log(`Order service running on port ${PORT}`);
 });
