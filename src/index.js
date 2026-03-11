@@ -18,9 +18,15 @@ const pool = new Pool({
     port: parseInt(process.env.DB_PORT, 10) || 5432,
 });
 
-// Health check
-app.get('/health', (req, res) => {
-    res.status(200).send('OK');
+// Health check — verifies the process is up AND the database is reachable
+app.get('/health', async (req, res) => {
+    try {
+        await pool.query('SELECT 1');
+        res.status(200).json({ status: 'ok', service: 'order-service', db: 'connected' });
+    } catch (err) {
+        console.error('Health check failed:', err.message);
+        res.status(503).json({ status: 'error', service: 'order-service', db: 'unreachable' });
+    }
 });
 
 // Get all orders
